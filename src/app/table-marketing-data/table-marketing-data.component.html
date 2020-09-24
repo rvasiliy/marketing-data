@@ -1,9 +1,15 @@
 <table mat-table [dataSource]="dataSource$ | async">
-  <ng-container matColumnDef="{{config.key}}" *ngFor="let config of configs$ | async">
+  <ng-container matColumnDef="{{config.key}}"
+                *ngFor="let config of configs$ | async; let index = index; trackBy:trackBy;">
     <th mat-header-cell *matHeaderCellDef>{{config.title}}</th>
-    <td mat-cell *matCellDef="let element"> {{element[config.key]}} </td>
+    <td mat-cell *matCellDef="let element">{{element[config.key]}}</td>
+    <td mat-footer-cell *matFooterCellDef class="footer-cell">
+      <ng-container *ngIf="!index">Total</ng-container>
+      <ng-container *ngIf="index">{{getTotalByColumn(config.key) | async}}</ng-container>
+    </td>
   </ng-container>
 
   <tr mat-header-row *matHeaderRowDef="displayedColumns$ | async"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns$ | async;"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns$ | async"></tr>
+  <tr mat-footer-row *matFooterRowDef="displayedColumns$ | async"></tr>
 </table>
