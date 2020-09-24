@@ -1,4 +1,5 @@
-import {Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
+import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
 import {forkJoin, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
@@ -17,7 +18,9 @@ interface TableData {
   templateUrl: './table-marketing-data.component.html',
   styleUrls: ['./table-marketing-data.component.scss']
 })
-export class TableMarketingDataComponent implements OnInit {
+export class TableMarketingDataComponent implements OnInit, AfterViewInit {
+  @ViewChild(MatSort) sort: MatSort;
+
   displayedColumns$: Observable<string[]>;
   dataSource$: Observable<MatTableDataSource<TableData>>;
   configs$: Observable<{ key: string, title: string }[]>;
@@ -59,6 +62,14 @@ export class TableMarketingDataComponent implements OnInit {
           })
         )
       );
+  }
+
+  ngAfterViewInit(): void {
+    this.dataSource$ = this.dataSource$.pipe(map(datasource => {
+      datasource.sort = this.sort;
+
+      return datasource;
+    }));
   }
 
   getTotalByColumn(key: string): Observable<any> {
